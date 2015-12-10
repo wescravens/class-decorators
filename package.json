@@ -1,8 +1,8 @@
 {
   "name": "class-decorators",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Adds mixin support to es6 classes using decorators",
-  "main": "index.js",
+  "main": "index.es6",
   "scripts": {
     "test": "mocha --require babel-core/register"
   },
