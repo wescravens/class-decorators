@@ -1,6 +1,6 @@
 {
   "name": "class-decorators",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Adds mixin support to es6 classes using decorators",
   "main": "index.js",
   "scripts": {

@@ -35,18 +35,19 @@ export const Writeable = {
   }
 };
 
+// api.js
 import {mixin, override} from 'class-decorators';
 import {Readable, Writable} from './myMixins';
 
 @mixin(Readable, Writable)
 class Api {
-	get() {
-		return 'this will be overwritten by Readable.get';
-	}
-	
-	@override
-	post() {
-		return 'this will not be overwritten due to @override';
-	}
+  get() {
+    return 'this will be overwritten by Readable.get';
+  }
+  
+  @override
+  post() {
+    return 'this will not be overwritten due to @override';
+  }
 }
 ```
