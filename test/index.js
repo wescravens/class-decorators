@@ -2,7 +2,7 @@
 'use strict';
 
 // Dependencies
-import {mixin, override} from '..';
+import {mixin, override, cascade} from '..';
 
 let Readable = {
   get() {
@@ -44,7 +44,6 @@ describe('@mixin', () => {
     api.post().should.be.equal('post enabled');
     api.put().should.be.equal('put enabled');
     api.patch().should.be.equal('patch enabled');
-    api.delete().should.be.equal('delete enabled');
   });
 });
 
@@ -65,6 +64,26 @@ describe('@override', () => {
     api.post().should.be.equal('post enabled');
     api.put().should.be.equal('put enabled');
     api.patch().should.be.equal('patch enabled');
-    api.delete().should.be.equal('delete enabled');
+  });
+});
+
+describe('@cascade', () => {
+  it('should call mixin functions with same name in the order they were added', () => {
+    const AnotherDelete = {delete() {return 'another delete'}};
+    @mixin(Readable, Writeable, AnotherDelete)
+    class Api {
+      @cascade
+      delete() {
+        return 'this will be called after Writable.delete';
+      }
+    }
+
+    let api = new Api();
+
+    let deleteReturns = api.delete();
+
+    deleteReturns[0].should.be.equal('delete enabled');
+    deleteReturns[1].should.be.equal('another delete');
+    deleteReturns[2].should.be.equal('this will be called after Writable.delete');
   });
 });

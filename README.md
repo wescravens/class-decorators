@@ -1,5 +1,5 @@
 # class-decorators
-Provides mixin support through es2015 decorators
+Provides mixin support through es2015 decorators.  `@mixin` will assign mixins in the order they are provided from left to right.
 
 ## Installation
 ```sh
@@ -8,7 +8,7 @@ npm i class-decorators -S
 ## Usage
 
 ```js
-//myMixins.js
+// myMixins.js
 import request from 'request';
 
 export const Readable = {
@@ -34,7 +34,9 @@ export const Writeable = {
     return request.delete();
   }
 };
+```
 
+```js
 // api.js
 import {mixin, override} from 'class-decorators';
 import {Readable, Writable} from './myMixins';
@@ -48,6 +50,39 @@ class Api {
   @override
   post() {
     return 'this will not be overwritten due to @override';
+  }
+}
+```
+
+#### React Component example using `@cascade`
+
+Using decorators to add mixins will cause your component lifecycle methods to be overwritten by methods used in the mixins.  Decorating your methods with `@cascade` will call the mixin functions first in the order they were applied.  Mixins are not required to be decorated with `@cascade` since decorating the component method will apply to all methods.
+
+```js
+import {Component} from 'react';
+
+const MyComponentMixin = {
+  componentDidMount() {
+    ...
+    // This function will be called just before the `componentDidMount`
+    // method on the class this mixin is applied to
+  }
+}
+
+const MyOtherComponentMixin = {
+  componentDidMount() {
+    ...
+  }
+}
+
+@mixin(MyComponentMixin, MyOtherComponentMixin)
+class MyComponent extends Component {
+  @cascade
+  componentDidMount() {
+    // When this method is called, the order of function calls will be 
+    // 1) MyComponentMixin.componentDidMount()
+    // 2) MyOtherComponentMixin.componentDidMount()
+    // 3) MyComponent.componentDidMount()
   }
 }
 ```
