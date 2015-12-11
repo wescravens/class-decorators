@@ -6,25 +6,25 @@ import {mixin, override, cascade} from '..';
 
 let Readable = {
   get() {
-    return 'get enabled';
+    return 'Readable.get';
   },
   head() {
-    return 'head enabled';
+    return 'Readable.head';
   }
 };
 
 let Writeable = {
   post() {
-    return 'post enabled';
+    return 'Writeable.post';
   },
   put() {
-    return 'put enabled';
+    return 'Writeable.put';
   },
   patch() {
-    return 'patch enabled';
+    return 'Writeable.patch';
   },
   delete() {
-    return 'delete enabled';
+    return 'Writeable.delete';
   }
 };
 
@@ -39,11 +39,11 @@ describe('@mixin', () => {
 
     let api = new Api();
 
-    api.get().should.be.equal('get enabled');
-    api.head().should.be.equal('head enabled');
-    api.post().should.be.equal('post enabled');
-    api.put().should.be.equal('put enabled');
-    api.patch().should.be.equal('patch enabled');
+    api.get().should.be.equal('Readable.get');
+    api.head().should.be.equal('Readable.head');
+    api.post().should.be.equal('Writeable.post');
+    api.put().should.be.equal('Writeable.put');
+    api.patch().should.be.equal('Writeable.patch');
   });
 });
 
@@ -53,28 +53,28 @@ describe('@override', () => {
     class Api {
       @override
       get() {
-        return 'this will be preserved';
+        return 'Api.get';
       }
     }
 
     let api = new Api();
 
-    api.get().should.be.equal('this will be preserved');
-    api.head().should.be.equal('head enabled');
-    api.post().should.be.equal('post enabled');
-    api.put().should.be.equal('put enabled');
-    api.patch().should.be.equal('patch enabled');
+    api.get().should.be.equal('Api.get');
+    api.head().should.be.equal('Readable.head');
+    api.post().should.be.equal('Writeable.post');
+    api.put().should.be.equal('Writeable.put');
+    api.patch().should.be.equal('Writeable.patch');
   });
 });
 
 describe('@cascade', () => {
   it('should call mixin functions with same name in the order they were added', () => {
-    const AnotherDelete = {delete() {return 'another delete'}};
+    const AnotherDelete = {delete() {return 'AnotherDelete.delete'}};
     @mixin(Readable, Writeable, AnotherDelete)
     class Api {
       @cascade
       delete() {
-        return 'this will be called after Writable.delete';
+        return 'Api.delete';
       }
     }
 
@@ -82,8 +82,8 @@ describe('@cascade', () => {
 
     let deleteReturns = api.delete();
 
-    deleteReturns[0].should.be.equal('delete enabled');
-    deleteReturns[1].should.be.equal('another delete');
-    deleteReturns[2].should.be.equal('this will be called after Writable.delete');
+    deleteReturns[0].should.be.equal('Writeable.delete');
+    deleteReturns[1].should.be.equal('AnotherDelete.delete');
+    deleteReturns[2].should.be.equal('Api.delete');
   });
 });

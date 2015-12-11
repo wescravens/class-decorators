@@ -56,7 +56,7 @@ class Api {
 
 #### React Component example using `@cascade`
 
-Using decorators to add mixins will cause your component lifecycle methods to be overwritten by methods used in the mixins.  Decorating your methods with `@cascade` will call the mixin functions first in the order they were applied.  Mixins are not required to be decorated with `@cascade` since decorating the component method will apply to all methods.
+Using decorators to add mixins will cause your component lifecycle methods to be overwritten by methods used in the mixins.  Decorating your methods with `@cascade` will call the mixin functions first in the order they were applied.  Mixins are not required to be decorated with `@cascade` since decorating the component method will apply to all methods.  Returns from all methods will be returned in an array in the order the methods were called.
 
 ```js
 import {Component} from 'react';
