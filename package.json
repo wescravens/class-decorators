@@ -1,6 +1,6 @@
 {
   "name": "class-decorators",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Adds mixin support to es6 classes using decorators",
   "main": "index.es6",
   "scripts": {
@@ -16,11 +16,15 @@
     "mixin",
     "mixins",
     "override",
+    "cascade",
     "decorator",
     "decorators",
     "babel",
     "es2015",
-    "es2016"
+    "es2016",
+    "react",
+    "reflux",
+    "flux"
   ],
   "devDependencies": {
     "babel": "^6.3.13",
