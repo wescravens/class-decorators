@@ -7,7 +7,7 @@
  */
 export function mixin (...mixins) {
   return function (TargetClass) {
-    class Mixed {}
+    class Mixed extends TargetClass {}
     mixins = mixins.reverse();
     for (let mixin of mixins) {
       for (let prop in mixin) {

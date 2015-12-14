@@ -2,7 +2,7 @@
 'use strict';
 
 // Dependencies
-import {mixin, override, cascade} from '..';
+import {mixin, override, cascade} from '../index';
 
 let Readable = {
   httpGet() {
@@ -48,6 +48,23 @@ describe('@mixin', () => {
     api.post().should.be.equal('Writeable.post');
     api.put().should.be.equal('Writeable.put');
     api.patch().should.be.equal('Writeable.patch');
+  });
+
+  it('should preserve non-conflicting class methods', () => {
+    @mixin(Readable, Writeable)
+    class Api {
+      httpGet() {
+        return 'this will be overwritten by mixin';
+      }
+
+      myMethod() {
+        return 'myMethod';
+      }
+    }
+
+    let api = new Api();
+
+    api.myMethod().should.be.equal('myMethod');
   });
 });
 
