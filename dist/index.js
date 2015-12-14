@@ -21,15 +21,27 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 function mixin() {
   for (var _len = arguments.length, mixins = Array(_len), _key = 0; _key < _len; _key++) {
     mixins[_key] = arguments[_key];
   }
 
   return function (TargetClass) {
-    var Mixed = function Mixed() {
-      _classCallCheck(this, Mixed);
-    };
+    var Mixed = (function (_TargetClass) {
+      _inherits(Mixed, _TargetClass);
+
+      function Mixed() {
+        _classCallCheck(this, Mixed);
+
+        return _possibleConstructorReturn(this, Object.getPrototypeOf(Mixed).apply(this, arguments));
+      }
+
+      return Mixed;
+    })(TargetClass);
 
     mixins = mixins.reverse();
     var _iteratorNormalCompletion = true;
@@ -65,7 +77,6 @@ function mixin() {
                 if ('object' === (typeof mixinProp === 'undefined' ? 'undefined' : _typeof(mixinProp))) {
                   Mixed.prototype[prop] = Mixed.prototype[prop] || {};
                   Object.assign(Mixed.prototype[prop], TargetClass.prototype[prop], mixinProp);
-                  console.log('Mixed', TargetClass.prototype[prop], prop);
                   return 'continue';
                 }
 
