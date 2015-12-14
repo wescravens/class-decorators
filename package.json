@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha --require babel-core/register",
     "dist": "./node_modules/.bin/babel index.es6 --out-file dist/index.js",
-    "publish": "npm run dist && npm version patch"
+    "prepublish": "npm run dist && npm version patch"
   },
   "repository": {
     "type": "git",
