@@ -34,7 +34,6 @@ export function mixin (...mixins) {
             if ('object' === typeof mixinProp) {
               Mixed.prototype[prop] = Mixed.prototype[prop] || {};
               Object.assign(Mixed.prototype[prop], TargetClass.prototype[prop], mixinProp);
-              console.log('Mixed', TargetClass.prototype[prop], prop);
               continue;
             }
 
