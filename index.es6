@@ -7,37 +7,48 @@
  */
 export function mixin (...mixins) {
   return function (TargetClass) {
-    class Mixed extends TargetClass {}
+    class Mixed {}
     mixins = mixins.reverse();
     for (let mixin of mixins) {
       for (let prop in mixin) {
-        let descriptor = Object.getOwnPropertyDescriptor(TargetClass.prototype, prop),
-          cascades = TargetClass.prototype.__cascades__;
+        let targetProto = TargetClass.prototype,
+          cascades = targetProto.__cascades__,
+          overrides = targetProto.__overrides__,
+          hasProp = targetProto[prop] != null,
+          shouldCascade = cascades && cascades[prop],
+          shouldOverride = overrides && overrides[prop];
 
-        if (!descriptor) {
-          Mixed.prototype[prop] = mixin[prop];
-        } else {
-          if (cascades && cascades[prop]) {
-            let mixedProp = Mixed.prototype[prop],
-              mixinProp = mixin[prop];
-
-            if (mixedProp) {
-              if ('function' !== typeof mixinProp) {
-                throw new TypeError('@cascade can only decorate a class method' + typeof mixinProp);
-              }
-
-              let lastMixinProp = Mixed.prototype[prop];
-              Mixed.prototype[prop] = function cascadeWrapper () {
-                return _flatten([mixinProp.apply(this, arguments), lastMixinProp.apply(this, arguments)]);
-              }
-            }
-            continue;
-          }
-
-          if (descriptor.writable) {
-            Mixed.prototype[prop] = mixin[prop];
-          }
+        if (shouldOverride) {
+          Mixed.prototype[prop] = TargetClass.prototype[prop];
+          continue;
         }
+
+        if (shouldCascade) {
+          let mixinProp = mixin[prop],
+            currentProp = Mixed.prototype[prop] || TargetClass.prototype[prop];
+
+          if ('function' !== typeof mixinProp) {
+            // allow objects if property initializers become part of the ES7 class spec
+            // https://esdiscuss.org/topic/es7-property-initializers
+            // https://www.npmjs.com/package/babel-plugin-class-properties-7to6
+            if ('object' === typeof mixinProp) {
+              Mixed.prototype[prop] = Mixed.prototype[prop] || {};
+              Object.assign(Mixed.prototype[prop], TargetClass.prototype[prop], mixinProp);
+              console.log('Mixed', TargetClass.prototype[prop], prop);
+              continue;
+            }
+
+            throw new TypeError('@cascade can only decorate a class method or object' + typeof mixinProp);
+          }
+
+          Mixed.prototype[prop] = function cascadeWrapper () {
+            return _flatten([mixinProp.apply(this, arguments), currentProp.apply(this, arguments)]);
+          };
+
+          continue;
+        }
+
+        Mixed.prototype[prop] = mixin[prop];
       }
     }
 
@@ -50,12 +61,10 @@ export function mixin (...mixins) {
  * when using the @mixin decorator
  * @param   {Class}  target     Class that the property is owned by
  * @param   {String} key        Property name
- * @param   {Object} descriptor Property descriptor
  * @returns {object} modified property descriptor
  */
-export function override (target, key, descriptor) {
-  descriptor.writable = false;
-  return descriptor;
+export function override (target, key) {
+  return _addClassMetaFlag('__overrides__', target, key);
 }
 
 /**
@@ -63,12 +72,16 @@ export function override (target, key, descriptor) {
  * with the same name first before this method is called
  * @param  {Class}  target     Class that the property is owned by
  * @param  {String} key        Property name
- * @param  {Object} descriptor Property descriptor
  * @return {void}
  */
-export function cascade (target, key, descriptor) {
-  target.__cascades__ = target.__cascades__ || {};
-  target.__cascades__[key] = true;
+export function cascade (target, key) {
+  return _addClassMetaFlag('__cascades__', target, key);
+}
+
+function _addClassMetaFlag (metaKey, target, key) {
+  target[metaKey] = target[metaKey] || {};
+  target[metaKey][key] = true;
+  return target;
 }
 
 /**

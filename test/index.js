@@ -5,11 +5,15 @@
 import {mixin, override, cascade} from '..';
 
 let Readable = {
-  get() {
+  httpGet() {
     return 'Readable.get';
   },
   head() {
     return 'Readable.head';
+  },
+  opts: {
+    host: 'Readable.opts.host',
+    port: 'Readable.opts.port'
   }
 };
 
@@ -32,14 +36,14 @@ describe('@mixin', () => {
   it('should decorate class with mixins', () => {
     @mixin(Readable, Writeable)
     class Api {
-      get() {
+      httpGet() {
         return 'this will be overwritten by mixin';
       }
     }
 
     let api = new Api();
 
-    api.get().should.be.equal('Readable.get');
+    api.httpGet().should.be.equal('Readable.get');
     api.head().should.be.equal('Readable.head');
     api.post().should.be.equal('Writeable.post');
     api.put().should.be.equal('Writeable.put');
@@ -52,14 +56,14 @@ describe('@override', () => {
     @mixin(Readable, Writeable)
     class Api {
       @override
-      get() {
+      httpGet() {
         return 'Api.get';
       }
     }
 
     let api = new Api();
 
-    api.get().should.be.equal('Api.get');
+    api.httpGet().should.be.equal('Api.get');
     api.head().should.be.equal('Readable.head');
     api.post().should.be.equal('Writeable.post');
     api.put().should.be.equal('Writeable.put');
